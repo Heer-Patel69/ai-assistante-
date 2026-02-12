@@ -1,7 +1,18 @@
 import streamlit as st
-import ollama
+import sys
+import os
 
-MODEL = "deepseek-r1:8b"
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Import unified config
+from config import MODEL_NAME, MODEL_OPTIONS
+
+# Mock ollama if not available (for testing)
+try:
+    import ollama
+except ImportError:
+    st.error("Ollama is not installed. Please install it to use this app.")
+    st.stop()
 
 # Load system prompt
 with open("system_prompt.txt", "r", encoding="utf-8") as f:
@@ -69,8 +80,9 @@ if user_input:
     with st.chat_message("assistant", avatar="🧠"):
         with st.spinner("Thinking..."):
             response = ollama.chat(
-                model=MODEL,
-                messages=st.session_state.messages
+                model=MODEL_NAME,
+                messages=st.session_state.messages,
+                options=MODEL_OPTIONS
             )
             reply = response["message"]["content"]
             st.markdown(reply)
