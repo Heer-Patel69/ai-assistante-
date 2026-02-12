@@ -1,0 +1,13 @@
+ollama
+pyautogui
+requests
+faster-whisper
+sounddevice
+scipy
+pyttsx3
+langchain-community
+streamlit
+python-docx
+customtkinter
+keyboard
+pynput
