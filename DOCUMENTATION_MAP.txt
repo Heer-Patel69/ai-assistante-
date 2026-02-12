@@ -1,0 +1,150 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║              📚 DOCUMENTATION NAVIGATION MAP                  ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+
+�� CHOOSE YOUR PATH
+═══════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────┐
+│  I'M A BEGINNER - Never used this before                    │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+        Read: START_HERE.txt (1 min)
+                            ↓
+        Then: QUICKSTART.md (5 min setup)
+                            ↓
+        If stuck: SETUP_GUIDE.md (detailed help)
+
+
+┌─────────────────────────────────────────────────────────────┐
+│  I'M EXPERIENCED - Just need the commands                   │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+        Read: QUICKSTART.md (cheat sheet)
+
+
+┌─────────────────────────────────────────────────────────────┐
+│  I HAVE A PROBLEM - Something's not working                 │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+        Read: SETUP_GUIDE.md (Troubleshooting section)
+
+
+┌─────────────────────────────────────────────────────────────┐
+│  I WANT TO LEARN - What can this do?                        │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+        Read: README.md (Features & capabilities)
+
+
+┌─────────────────────────────────────────────────────────────┐
+│  I'M A DEVELOPER - Technical details                        │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+        Read: REFACTORING_SUMMARY.md (Architecture)
+
+
+📁 FILE BREAKDOWN
+═══════════════════════════════════════════════════════════════
+
+START_HERE.txt
+├─ Purpose: First file new users should see
+├─ Length: 1 page
+├─ Content: Navigation guide, super quick start
+└─ Time: 30 seconds
+
+QUICKSTART.md
+├─ Purpose: Fast setup for people who know what they're doing
+├─ Length: 127 lines
+├─ Content: Installation commands, cheat sheet, quick fixes
+└─ Time: 5 minutes
+
+SETUP_GUIDE.md
+├─ Purpose: Complete installation guide with troubleshooting
+├─ Length: 488 lines
+├─ Content: Step-by-step for all platforms, 15+ solutions
+└─ Time: 15-30 minutes (as reference)
+
+README.md
+├─ Purpose: Project overview and quick reference
+├─ Length: 240 lines
+├─ Content: Features, requirements, usage examples
+└─ Time: 5-10 minutes
+
+REFACTORING_SUMMARY.md
+├─ Purpose: Technical documentation
+├─ Length: 212 lines
+├─ Content: Architecture, performance, migration
+└─ Time: 10-20 minutes
+
+
+🔍 QUICK FIND
+═══════════════════════════════════════════════════════════════
+
+Looking for...              See...
+──────────────────────────────────────────────────────────────
+How to install?             QUICKSTART.md or SETUP_GUIDE.md
+Ollama setup?               SETUP_GUIDE.md → Prerequisites
+Python setup?               SETUP_GUIDE.md → Prerequisites
+Error messages?             SETUP_GUIDE.md → Troubleshooting
+Configuration?              SETUP_GUIDE.md → Advanced Config
+                           or config.py directly
+What can it do?             README.md → Features
+System requirements?        README.md → System Requirements
+How to use?                 README.md → Usage Examples
+                           QUICKSTART.md → Common Commands
+GPU setup?                  SETUP_GUIDE.md → Platform-Specific
+Voice not working?          SETUP_GUIDE.md → Troubleshooting
+Too slow?                   SETUP_GUIDE.md → Advanced Config
+Architecture details?       REFACTORING_SUMMARY.md
+
+
+⏱️ TIME ESTIMATES
+═══════════════════════════════════════════════════════════════
+
+First-time setup:           5-15 minutes
+Reading documentation:      10-30 minutes (optional)
+Model download:             2-5 minutes (automatic)
+Understanding features:     5 minutes (README.md)
+Learning to use:            Immediate (very intuitive)
+
+
+💡 RECOMMENDED READING ORDER
+═══════════════════════════════════════════════════════════════
+
+For New Users:
+   1. START_HERE.txt        (30 sec)
+   2. QUICKSTART.md         (5 min)
+   3. Try it out!
+   4. README.md             (when curious about features)
+   5. SETUP_GUIDE.md        (only if you have problems)
+
+For Developers:
+   1. README.md             (overview)
+   2. REFACTORING_SUMMARY.md (architecture)
+   3. config.py             (configuration)
+   4. system_prompt.txt     (AI behavior)
+
+
+🎓 SKILL LEVEL GUIDE
+═══════════════════════════════════════════════════════════════
+
+Beginner (never used Python/AI):
+   → Read: START_HERE.txt → SETUP_GUIDE.md
+   → Time: 30 minutes total
+   
+Intermediate (used Python before):
+   → Read: QUICKSTART.md
+   → Time: 10 minutes total
+   
+Advanced (developer/power user):
+   → Read: QUICKSTART.md + REFACTORING_SUMMARY.md
+   → Time: 20 minutes total
+
+
+═══════════════════════════════════════════════════════════════
+              Pick your starting point above! 👆
+═══════════════════════════════════════════════════════════════

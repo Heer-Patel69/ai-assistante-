@@ -1,0 +1,96 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                                                                  ║
+║              🧠 WELCOME TO UNIVOID AI ASSISTANT                  ║
+║                                                                  ║
+║              Your Fully Local, Private AI Assistant             ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+
+📚 QUICK NAVIGATION
+═══════════════════════════════════════════════════════════════════
+
+📋 START HERE:
+   
+   1. New user? → Read QUICKSTART.md (5 min setup)
+   
+   2. Need help? → Read SETUP_GUIDE.md (detailed guide)
+   
+   3. Want overview? → Read README.md (features & info)
+   
+   4. Technical details? → Read REFACTORING_SUMMARY.md
+
+
+⚡ SUPER QUICK START (3 steps)
+═══════════════════════════════════════════════════════════════════
+
+If you just want to get running FAST:
+
+1. Install Ollama: https://ollama.com
+   
+2. Open terminal in this folder and run:
+   
+   python -m venv venv
+   venv\Scripts\activate         (Windows)
+   source venv/bin/activate      (Mac/Linux)
+   pip install -r requirements.txt
+   ollama pull qwen3:4b
+   
+3. Run the assistant:
+   
+   python main.py                (CLI mode)
+   python desktop_app.py         (GUI mode - recommended)
+
+
+🆘 HAVING TROUBLE?
+═══════════════════════════════════════════════════════════════════
+
+Most common issues:
+
+❌ "ollama not found"
+   → Install Ollama from ollama.com
+
+❌ "Model not found"
+   → Run: ollama pull qwen3:4b
+
+❌ "Module not found"
+   → Run: pip install -r requirements.txt
+
+❌ Can't start GUI
+   → Run: pip install customtkinter Pillow
+
+For more help, see SETUP_GUIDE.md
+
+
+💡 WHAT CAN IT DO?
+═══════════════════════════════════════════════════════════════════
+
+• Search the web for real-time information
+• Create and manage files & documents
+• Run terminal commands safely
+• Open applications and websites
+• Monitor your system (CPU, RAM, disk)
+• Remember your preferences
+• Voice control (desktop app)
+• And much more!
+
+
+📖 DOCUMENTATION FILES
+═══════════════════════════════════════════════════════════════════
+
+QUICKSTART.md          → 5-minute setup guide + cheat sheet
+SETUP_GUIDE.md         → Complete installation & troubleshooting
+README.md              → Features, usage, and overview
+REFACTORING_SUMMARY.md → Technical architecture details
+
+
+🚀 GET STARTED NOW
+═══════════════════════════════════════════════════════════════════
+
+Open QUICKSTART.md and follow the steps!
+
+Or just run:  python desktop_app.py
+
+════════════════════════════════════════════════════════════════════
+Enjoy your local AI assistant! No cloud, no tracking, 100% yours! 🎉
+════════════════════════════════════════════════════════════════════
