@@ -1,6 +1,6 @@
 """
-main.py — JARVIS Terminal Mode
-Run the autonomous agent in terminal with full tool support.
+main.py — UniVoid Terminal Mode
+Clean CLI entry point for the AI assistant.
 """
 
 import os
@@ -8,66 +8,44 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from agent_loop import run_agent_stream, clear_conversation
-from model_router import router
+from agent_loop import run_agent, reset_conversation
+from config import print_config, MODEL_NAME
 
 
 def main():
-    print("=" * 55)
-    print("🧠 JARVIS — Autonomous Local Computer Operator")
-    print("=" * 55)
-    print("Type your task in natural language.")
-    print("Commands:  /clear = reset  |  /exit = quit")
-    print("=" * 55)
+    print("=" * 60)
+    print("🧠 UniVoid — Your Local AI Assistant")
+    print("=" * 60)
+    print_config()
+    print("=" * 60)
+    print("Type your message or command.")
+    print("Commands:  reset = clear chat  |  quit/exit/bye = exit")
+    print("=" * 60)
 
     while True:
         try:
             user_input = input("\n🫵 You: ").strip()
         except (KeyboardInterrupt, EOFError):
-            print("\n\n👋 JARVIS signing off.")
+            print("\n\n👋 UniVoid signing off.")
             break
 
         if not user_input:
             continue
 
-        if user_input.lower() in ("/exit", "exit", "quit"):
-            print("\n👋 JARVIS signing off.")
+        if user_input.lower() in ("quit", "exit", "bye"):
+            print("\n👋 UniVoid signing off.")
             break
 
-        if user_input.lower() in ("/clear", "clear"):
-            clear_conversation()
+        if user_input.lower() == "reset":
+            reset_conversation()
             print("🧹 Conversation cleared.")
             continue
 
-        # Run agent with streaming output
+        # Run agent and print response
         print()
-        current_line = ""
-
-        for msg_type, content in run_agent_stream(user_input):
-            if msg_type == "token":
-                print(content, end="", flush=True)
-                current_line += content
-
-            elif msg_type == "model_info":
-                print(f"\n{content}")
-
-            elif msg_type == "status":
-                print(f"\n⏳ {content}")
-
-            elif msg_type == "tool_call":
-                print(f"\n\n{content}")
-                current_line = ""
-
-            elif msg_type == "tool_result":
-                preview = content[:800] + ("..." if len(content) > 800 else "")
-                print(f"\n📋 {preview}")
-                current_line = ""
-
-            elif msg_type == "done":
-                if current_line:
-                    print()  # Ensure newline at end
-
-        print()  # Final newline
+        response = run_agent(user_input)
+        print(response)
+        print()
 
 
 if __name__ == "__main__":

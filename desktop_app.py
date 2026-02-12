@@ -12,7 +12,7 @@ import sys
 # Ensure we can import from the project root
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from agent_loop import run_agent_stream, clear_conversation
+from agent_loop import run_agent_stream, reset_conversation
 from voice_input import record_audio, transcribe_audio
 from voice_output import speak
 
@@ -309,12 +309,6 @@ class UniVoidApp(ctk.CTk):
                         text_snapshot = full_text[0]
                         self.after(0, lambda t=text_snapshot: self.update_ai_message(label[0], t))
 
-                    elif msg_type == "model_info":
-                        self.after(0, lambda c=content: self.set_status(c))
-
-                    elif msg_type == "status":
-                        self.after(0, lambda c=content: self.set_status(c))
-
                     elif msg_type == "tool_call":
                         self.after(0, lambda c=content: self.add_message("ai", c))
                         # Reset streaming label for next LLM output
@@ -334,6 +328,12 @@ class UniVoidApp(ctk.CTk):
                             label[0] = self.start_ai_message()
                         self.after(0, new_label2)
                         time.sleep(0.1)
+
+                    elif msg_type == "error":
+                        self.after(0, lambda c=content: self.add_message("ai", f"❌ {c}"))
+
+                    elif msg_type == "warning":
+                        self.after(0, lambda c=content: self.add_message("ai", f"⚠️ {c}"))
 
                     elif msg_type == "done":
                         pass
@@ -370,7 +370,7 @@ class UniVoidApp(ctk.CTk):
     def clear_chat(self):
         for widget in self.chat_frame.winfo_children():
             widget.destroy()
-        clear_conversation()
+        reset_conversation()
         self.add_message("ai", "Chat cleared. How can I help?")
         self.set_status("Ready")
 

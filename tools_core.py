@@ -1,13 +1,15 @@
 """
-tools_core.py — 5 Core Tools with Safety Layer
-Unified tool system for the JARVIS operator agent.
+tools_core.py — 7 Core Tools with Safety Layer
+Unified tool system for the UniVoid AI assistant.
 
 Tools:
-  1. terminal_executor  — Run shell commands (with safety blocklist)
+  1. terminal_executor   — Run shell commands (with safety blocklist)
   2. file_manager        — Create/read/write/delete/move/list/search files
-  3. app_opener          — Launch applications by name
-  4. system_info         — OS, disk, processes, environment
-  5. memory_store        — Persistent user memory
+  3. web_search          — DuckDuckGo search (no API key needed)
+  4. document_creator    — Create txt/md/html/py/docx files
+  5. app_opener          — Launch applications by name
+  6. system_info         — OS, disk, processes, environment
+  7. memory_store        — Persistent user memory
 """
 
 import os
@@ -17,11 +19,12 @@ import shutil
 import platform
 import subprocess
 import psutil
+import requests
 import memory as mem
+from config import DESKTOP, HOME, WORKSPACE
 
-# === PATHS ===
-DESKTOP = os.path.join(os.path.expanduser("~"), "OneDrive", "Desktop")
-HOME = os.path.expanduser("~")
+# Ensure WORKSPACE exists
+os.makedirs(WORKSPACE, exist_ok=True)
 
 
 # ============================================
@@ -115,8 +118,15 @@ def terminal_executor(args):
             response = f"✅ Command completed (exit code {result.returncode})"
 
         # Truncate long output
-        if len(response) > 3000:
-            response = response[:3000] + "\n...(truncated)"
+        if len(output) > 2000:
+            output = output[:2000] + "\n...(truncated)"
+            response = f"✅ Output:\n{output}"
+        if error and len(error) > 500:
+            error = error[:500] + "\n...(truncated)"
+            if response:
+                response += f"\n⚠️ Stderr:\n{error}"
+            else:
+                response = f"⚠️ Stderr:\n{error}"
 
         return response
 
@@ -131,11 +141,11 @@ def terminal_executor(args):
 # ============================================
 
 def _resolve_path(path):
-    """Resolve relative paths to Desktop."""
+    """Resolve relative paths to WORKSPACE."""
     if not path:
-        return DESKTOP
+        return WORKSPACE
     if not os.path.isabs(path):
-        return os.path.join(DESKTOP, path)
+        return os.path.join(WORKSPACE, path)
     return path
 
 
@@ -160,8 +170,8 @@ def file_manager(args):
             return f"❌ File not found: {path}"
         with open(path, "r", encoding="utf-8", errors="replace") as f:
             content = f.read()
-        if len(content) > 3000:
-            return content[:3000] + f"\n\n...(truncated, {len(content)} total chars)"
+        if len(content) > 10000:
+            return content[:10000] + f"\n\n...(truncated, {len(content)} total chars)"
         return content
 
     elif action == "delete":
@@ -240,7 +250,188 @@ def file_manager(args):
 
 
 # ============================================
-# TOOL 3: APP OPENER
+# TOOL 3: WEB SEARCH
+# ============================================
+
+def web_search(args):
+    """
+    Search the web using DuckDuckGo.
+    Args: {"query": "search terms"}
+    """
+    query = args.get("query", "").strip()
+    if not query:
+        return "❌ No search query provided."
+    
+    try:
+        # First try DuckDuckGo Instant Answer API
+        params = {"q": query, "format": "json"}
+        response = requests.get("https://api.duckduckgo.com/", params=params, timeout=10)
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Check for instant answer
+            if data.get("AbstractText"):
+                return f"🔍 {data['AbstractText']}\n\nSource: {data.get('AbstractURL', 'DuckDuckGo')}"
+            
+            # Check for related topics
+            if data.get("RelatedTopics"):
+                results = []
+                for topic in data["RelatedTopics"][:3]:
+                    if isinstance(topic, dict) and topic.get("Text"):
+                        results.append(f"• {topic['Text']}")
+                if results:
+                    return f"🔍 Results for '{query}':\n" + "\n".join(results)
+        
+        # Fallback to duckduckgo_search library
+        try:
+            from duckduckgo_search import DDGS
+            
+            with DDGS() as ddgs:
+                results = list(ddgs.text(query, max_results=5))
+                
+                if not results:
+                    return f"❌ No results found for '{query}'"
+                
+                output = [f"🔍 Search results for '{query}':\n"]
+                for i, result in enumerate(results, 1):
+                    title = result.get('title', 'No title')
+                    body = result.get('body', '')
+                    link = result.get('href', '')
+                    
+                    output.append(f"{i}. {title}")
+                    if body:
+                        # Truncate body
+                        body_short = body[:150] + ("..." if len(body) > 150 else "")
+                        output.append(f"   {body_short}")
+                    if link:
+                        output.append(f"   {link}")
+                    output.append("")
+                
+                return "\n".join(output)
+        
+        except ImportError:
+            return "❌ duckduckgo_search library not installed. Run: pip install duckduckgo-search"
+        except Exception as e:
+            return f"❌ Search error: {e}"
+    
+    except Exception as e:
+        return f"❌ Search failed: {e}"
+
+
+# ============================================
+# TOOL 4: DOCUMENT CREATOR
+# ============================================
+
+def document_creator(args):
+    """
+    Create various document types (txt, md, html, py, docx).
+    Args: {"filename": "report.md", "content": "# Title\nContent", "format": "md"}
+    """
+    filename = args.get("filename", "").strip()
+    content = args.get("content", "").strip()
+    doc_format = args.get("format", "").lower().strip()
+    
+    if not filename:
+        return "❌ No filename provided."
+    
+    if not content:
+        return "❌ No content provided."
+    
+    # Infer format from filename if not provided
+    if not doc_format:
+        ext = os.path.splitext(filename)[1].lstrip(".")
+        doc_format = ext if ext else "txt"
+    
+    # Resolve path (relative to WORKSPACE)
+    if not os.path.isabs(filename):
+        filepath = os.path.join(WORKSPACE, filename)
+    else:
+        filepath = filename
+    
+    # Ensure filename has correct extension
+    if not filename.endswith(f".{doc_format}"):
+        filepath = filepath.rsplit(".", 1)[0] + f".{doc_format}"
+    
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    
+    try:
+        if doc_format in ("txt", "md", "py", "js", "java", "cpp", "c", "sh", "bat", "ps1"):
+            # Plain text files
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(content)
+            return f"✅ {doc_format.upper()} file created: {filepath}"
+        
+        elif doc_format == "html":
+            # Generate styled HTML
+            html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }}
+        h1, h2, h3 {{
+            color: #2c3e50;
+        }}
+    </style>
+</head>
+<body>
+{content}
+</body>
+</html>"""
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(html_content)
+            return f"✅ HTML file created: {filepath}"
+        
+        elif doc_format == "docx":
+            # Create Word document
+            try:
+                from docx import Document
+                
+                doc = Document()
+                
+                # Split content by lines and add paragraphs
+                for line in content.split("\n"):
+                    if line.strip().startswith("# "):
+                        # Heading 1
+                        doc.add_heading(line.strip()[2:], level=1)
+                    elif line.strip().startswith("## "):
+                        # Heading 2
+                        doc.add_heading(line.strip()[3:], level=2)
+                    elif line.strip().startswith("### "):
+                        # Heading 3
+                        doc.add_heading(line.strip()[4:], level=3)
+                    else:
+                        # Regular paragraph
+                        doc.add_paragraph(line)
+                
+                doc.save(filepath)
+                return f"✅ DOCX file created: {filepath}"
+            
+            except ImportError:
+                return "❌ python-docx library not installed. Run: pip install python-docx"
+        
+        else:
+            # Unknown format - save as text
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(content)
+            return f"✅ File created: {filepath} (as text)"
+    
+    except Exception as e:
+        return f"❌ Error creating document: {e}"
+
+
+# ============================================
+# TOOL 5: APP OPENER
 # ============================================
 
 APP_ALIASES = {
@@ -338,7 +529,7 @@ def app_opener(args):
 
 
 # ============================================
-# TOOL 4: SYSTEM INFO
+# TOOL 6: SYSTEM INFO
 # ============================================
 
 def system_info(args):
@@ -427,7 +618,7 @@ def system_info(args):
 
 
 # ============================================
-# TOOL 5: MEMORY STORE
+# TOOL 7: MEMORY STORE
 # ============================================
 
 def memory_store(args):
@@ -487,7 +678,15 @@ TOOL_REGISTRY = {
     },
     "file_manager": {
         "func": file_manager,
-        "description": "ALWAYS use this for ANY file operation: create, read, write, delete, move, copy, list, search, mkdir. Args: {action, path, content?, destination?, query?}",
+        "description": "ALWAYS use this for ANY file operation: create, read, write, delete, move, copy, list, search, mkdir. Relative paths resolve to WORKSPACE. Args: {action, path, content?, destination?, query?}",
+    },
+    "web_search": {
+        "func": web_search,
+        "description": "ALWAYS use this to search the web for real-time information using DuckDuckGo. Args: {query}",
+    },
+    "document_creator": {
+        "func": document_creator,
+        "description": "ALWAYS use this to create documents (txt, md, html, py, docx). Supports markdown formatting in docx. Default save to WORKSPACE. Args: {filename, content, format?}",
     },
     "app_opener": {
         "func": app_opener,
